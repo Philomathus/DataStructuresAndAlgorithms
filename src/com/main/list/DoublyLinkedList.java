@@ -14,6 +14,14 @@ public class DoublyLinkedList<E> {
             this.data = data;
         }
 
+        public Node(E data, Node<E> prev, Node<E> next) {
+
+            this.data = data;
+            this.prev = prev;
+            this.next = next;
+
+        }
+
         public void setData(E data) {
             this.data = data;
         }
@@ -40,8 +48,8 @@ public class DoublyLinkedList<E> {
 
     }
 
-    private Node<E> header;
-    private Node<E> trailer;
+    private final Node<E> header;
+    private final Node<E> trailer;
     private int size;
 
     public DoublyLinkedList() {
@@ -69,38 +77,53 @@ public class DoublyLinkedList<E> {
 
     public void addFirst(E data) {
 
-        Node<E> newest = new Node<E>(data);
         Node<E> head = header.getNext();
-
-        newest.setPrev(header);
-        newest.setNext(head);
-
-        header.setNext(newest);
-        head.setPrev(newest);
-
-        size++;
+        addBetween(data, header, head);
 
     }
 
     public void addLast(E data) {
 
-        Node<E> newest = new Node<E>(data);
         Node<E> tail = trailer.getPrev();
-
-        newest.setPrev(tail);
-        newest.setNext(trailer);
-
-        trailer.setPrev(newest);
-        tail.setNext(newest);
+        addBetween(data, tail, trailer);
 
     }
 
     public E removeFirst() {
 
-        E headData = header.getNext().getData();
+        Node<E> head = header.getNext();
+        return remove(head);
 
+    }
 
+    public E removeLast() {
 
+        Node<E> tail = trailer.getPrev();
+        return remove(tail);
+
+    }
+
+    private void addBetween(E data, Node<E> predecessor, Node<E> successor) {
+
+        Node<E> newest = new Node<E>(data, predecessor, successor);
+        predecessor.setNext(newest);
+        successor.setPrev(newest);
+
+        size++;
+
+    }
+
+    private E remove(Node<E> node) {
+
+        Node<E> predecessor = node.getPrev();
+        Node<E> successor = node.getNext();
+
+        predecessor.setNext(successor);
+        successor.setPrev(predecessor);
+
+        size--;
+
+        return node.getData();
 
     }
 

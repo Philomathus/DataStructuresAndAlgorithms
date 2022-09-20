@@ -1,10 +1,11 @@
 package com.main.list;
 
 /**
- * Has a head and tail reference.
+ * Uses a head sentinel node.
+ * Does not have an explicit head reference.
  * @param <E>
  */
-public class SinglyLinkedList<E> {
+public class SinglyLinkedListV2<E> {
 
     private static class Node<E> {
 
@@ -18,6 +19,10 @@ public class SinglyLinkedList<E> {
 
         public Node(E data) {
             this.data = data;
+        }
+
+        public Node() {
+
         }
 
         public void setData(E data) {
@@ -38,9 +43,18 @@ public class SinglyLinkedList<E> {
 
     }
 
-    private Node<E> head;
+    /**
+     * Sentinel node
+     */
+    private final Node<E> header;
     private Node<E> tail;
     private int size;
+
+    public SinglyLinkedListV2() {
+
+        header = new Node<>();
+
+    }
 
     public int size() {
         return size;
@@ -51,7 +65,7 @@ public class SinglyLinkedList<E> {
     }
 
     public E first() {
-        return isEmpty() ? null : head.getData();
+        return isEmpty() ? null : header.getNext().getData();
     }
 
     public E last() {
@@ -59,40 +73,38 @@ public class SinglyLinkedList<E> {
     }
 
     public void addFirst(E data) {
-        head = new Node<>(data, head);
+        Node<E> newFirst = new Node<>(data);
+        addAfter(header, newFirst);
 
         if(isEmpty())
-            tail = head;
-
-        size++;
+            tail = newFirst;
     }
 
     public void addLast(E data) {
-        Node<E> newest = new Node<>(data);
-
-        if(isEmpty())
-            head = newest;
-        else
-            tail.setNext(newest);
-
-        tail = newest;
-
-        size++;
+        Node<E> newNext = new Node<>(data);
+        addAfter(isEmpty() ? header : tail, newNext);
+        tail = newNext;
     }
 
     public E removeFirst() {
         if(isEmpty())
             return null;
 
-        E removedData = head.getData();
-        head = head.getNext();
-
-        if(head == null)
-            tail = null;
-
+        Node<E> head = header.getNext();
+        header.setNext(head.getNext());
         size--;
 
-        return removedData;
+        if(isEmpty())
+            tail = null;
+
+        return head.getData();
     }
 
+    private void addAfter(Node<E> predecessor, Node<E> node) {
+
+        node.setNext(predecessor.getNext());
+        predecessor.setNext(node);
+        size++;
+
+    }
 }
